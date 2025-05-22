@@ -263,3 +263,50 @@ next_day_pred_rf = rf.predict(X.tail(1))[0]
 next_day_pred_xgb = xgb_model.predict(X.tail(1))[0]
 st.metric("Random Forest Prediction (Next Day)", f"${next_day_pred_rf:.2f}")
 st.metric("XGBoost Prediction (Next Day)", f"${next_day_pred_xgb:.2f}")
+
+
+st.header("Investment Signal Recommendation")
+
+# Latest values
+latest = df.iloc[-1]
+
+signal_score = 0
+
+# RSI Signal
+if latest['RSI'] < 30:
+    signal_score += 1  # Oversold -> Buy
+elif latest['RSI'] > 70:
+    signal_score -= 1  # Overbought -> Sell
+
+# MACD Signal
+if latest['MACD'] > latest['MACD_Signal']:
+    signal_score += 1  # Positive momentum
+else:
+    signal_score -= 1
+
+# ADX Signal
+if latest['ADX'] > 25:
+    if latest['MACD'] > latest['MACD_Signal']:
+        signal_score += 1  # Strong uptrend
+    else:
+        signal_score -= 1  # Strong downtrend
+
+# Moving Average Signal
+if latest['Close'] > latest['MA_10']:
+    signal_score += 1  # Above MA -> Bullish
+else:
+    signal_score -= 1
+
+if signal_score >= 2:
+    recommendation = "Recommendation: Go LONG (Buy)"
+    color = "green"
+elif signal_score <= -2:
+    recommendation = "Recommendation: Go SHORT (Sell)"
+    color = "red"
+else:
+    recommendation = "⏸ Recommendation: HOLD (Wait)"
+    color = "orange"
+
+# Display
+st.markdown(f"<h3 style='color:{color};'>{recommendation}</h3>", unsafe_allow_html=True)
+st.markdown(f"**Signal Score:** `{signal_score}` (Range: -4 to +4)")
