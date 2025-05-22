@@ -267,46 +267,57 @@ st.metric("XGBoost Prediction (Next Day)", f"${next_day_pred_xgb:.2f}")
 
 st.header("Investment Signal Recommendation")
 
-# Latest values
-latest = df.iloc[-1]
-
+latest = df.iloc[-1].copy() 
+print(latest)
 signal_score = 0
 
-# RSI Signal
-if latest['RSI'] < 30:
-    signal_score += 1  # Oversold -> Buy
-elif latest['RSI'] > 70:
-    signal_score -= 1  # Overbought -> Sell
+def to_scalar(value):
+    if isinstance(value, pd.Series):
+        return value.iloc[0]
+    return value
+score = 0
+def trading_signal(latest):
+    rsi = to_scalar(latest.get('RSI', None))
+    macd = to_scalar(latest.get('MACD', None))
+    macd_signal = to_scalar(latest.get('MACD_Signal', None))
+    adx = to_scalar(latest.get('ADX', None))
+    obv = to_scalar(latest.get('OBV', None))
+    close_price = to_scalar(latest.get('Close', None))
+    ma_10 = to_scalar(latest.get('MA_10', None))
 
-# MACD Signal
-if latest['MACD'] > latest['MACD_Signal']:
-    signal_score += 1  # Positive momentum
-else:
-    signal_score -= 1
+    if None in [rsi, macd, macd_signal, adx, obv, close_price, ma_10]:
+        return "Insufficient data"
 
-# ADX Signal
-if latest['ADX'] > 25:
-    if latest['MACD'] > latest['MACD_Signal']:
-        signal_score += 1  # Strong uptrend
+    score = 0
+
+    if rsi < 30:
+        score += 1
+    elif rsi > 70:
+        score -= 1
+
+    if macd > macd_signal:
+        score += 1
     else:
-        signal_score -= 1  # Strong downtrend
+        score -= 1
 
-# Moving Average Signal
-if latest['Close'] > latest['MA_10']:
-    signal_score += 1  # Above MA -> Bullish
-else:
-    signal_score -= 1
+    if adx > 25:
+        score += 0.5
+    else:
+        score -= 0.5
 
-if signal_score >= 2:
-    recommendation = "Recommendation: Go LONG (Buy)"
-    color = "green"
-elif signal_score <= -2:
-    recommendation = "Recommendation: Go SHORT (Sell)"
-    color = "red"
-else:
-    recommendation = "⏸ Recommendation: HOLD (Wait)"
-    color = "orange"
+    if close_price > ma_10:
+        score += 1
+    else:
+        score -= 1
 
-# Display
-st.markdown(f"<h3 style='color:{color};'>{recommendation}</h3>", unsafe_allow_html=True)
-st.markdown(f"**Signal Score:** `{signal_score}` (Range: -4 to +4)")
+    if score >= 1.5:
+        return f"LONG, {score}"
+    elif score <= -1.5:
+        return f"SHORT, {score}"
+    else:
+        return f"NEUTRAL, {score}"
+
+signal = trading_signal(latest)
+print(f"Trading signal based on indicators: {signal}")
+st.metric("Trading signal based on indicators", f"{signal}")
+
