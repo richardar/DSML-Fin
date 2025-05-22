@@ -78,8 +78,8 @@ A Streamlit-based web application for in-depth stock analysis, forecasting, and 
 
 ### 📈 Output Screenshots
 
-![Dashboard Overview](docs/screenshots/overview.png)
-![Technical Indicators](docs/screenshots/indicators.png)
+![Dashboard Overview](docs/screenshots/image1.png)
+![Technical Indicators](docs/screenshots/image.png)
 
 ---
 
@@ -97,7 +97,7 @@ Contributions, issues, and feature requests are welcome! Feel free to fork the r
 
 ### 🧑‍💻 Author
 
-* **Your Name** - [GitHub](https://github.com/yourusername)
+* **Richard AR** - [GitHub](https://github.com/richardar)
 
 ---
 
