@@ -177,10 +177,10 @@ fig_adx.update_layout(title="Average Directional Index (ADX)", template='plotly_
 st.plotly_chart(fig_adx, use_container_width=True)
 
 
-# st.header("🔮 Forecasting (ARIMA / SARIMA)")
+# st.header("= Forecasting (ARIMA / SARIMA)")
 from sklearn.metrics import mean_absolute_error
 
-st.header("🔮 Forecasting (ARIMA & SARIMA)")
+st.header(" Forecasting (ARIMA & SARIMA)")
 
 df['Target'] = df['Close'].shift(-1)
 df.dropna(inplace=True)
@@ -216,9 +216,8 @@ st.plotly_chart(fig_sarima, use_container_width=True)
 st.info(f"SARIMA MSE: {mse_sarima:.4f} | MAE: {mae_sarima:.4f}")
 
 
-# ========== Machine Learning ==========
 # Machine Learning - Visualization
-st.header("🧠 Machine Learning - Random Forest & XGBoost")
+st.header("Machine Learning - Random Forest & XGBoost")
 
 features = ['Close', 'Daily_returns', 'Log_returns', 'Volatility_10', 'MA_10', 'EMA_10',
             'RSI', 'MACD', 'MACD_Signal', 'BB_High', 'BB_Low', 'OBV', 'ADX']
